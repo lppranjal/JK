@@ -1,0 +1,19 @@
+# Visual Studio Code
+.vscode/
+
+# Node.js
+node_modules/
+
+# Angular build output
+dist/
+
+# .NET build artifacts
+bin/
+obj/
+
+# Logs
+*.log
+
+# OS Files
+.DS_Store
+Thumbs.db

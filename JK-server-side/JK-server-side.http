@@ -1,0 +1,6 @@
+@JK_server_side_HostAddress = http://localhost:5229
+
+GET {{JK_server_side_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
