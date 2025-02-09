@@ -7,6 +7,17 @@ using JK.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 1. Add CORS configuration.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDev", policyBuilder =>
+    {
+        policyBuilder.WithOrigins("http://localhost:4200") // Allow Angular dev server
+                     .AllowAnyHeader()
+                     .AllowAnyMethod();
+    });
+});
+
 // Configure Database Connection
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -43,6 +54,8 @@ builder.Services.AddControllers();
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+app.UseCors("AllowAngularDev");
 
 app.UseAuthentication();
 app.UseAuthorization();
