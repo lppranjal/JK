@@ -19,38 +19,119 @@ export interface ServiceProvider {
   imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
   template: `
     <div class="search-container">
-      <input
-        type="text"
-        [formControl]="searchControl"
-        placeholder="Search for Shops, Schools, or Tuition Centres" />
-      <ul *ngIf="results$ | async as results" class="suggestions">
-        <li *ngFor="let item of results" (click)="selectItem(item)">
-          {{ item.name }} ({{ item.serviceType }})
-        </li>
-      </ul>
+      <div class="search-bar">
+        <input
+          type="text"
+          [formControl]="searchControl"
+          placeholder="Search for Shops, Schools, or Tuition Centres"
+          class="search-input"
+        />
+        <button class="search-button" (click)="performSearch()">Search</button>
+      </div>
+      <!-- Use an ng-container to unwrap the async pipe and then conditionally display the list -->
+      <ng-container *ngIf="results$ | async as results">
+        <ul *ngIf="results.length > 0" class="suggestions">
+          <li *ngFor="let item of results" (click)="selectItem(item)">
+            <div class="suggestion-content">
+              <span class="suggestion-name">{{ item.name }}</span>
+              <span class="suggestion-type">({{ item.serviceType }})</span>
+            </div>
+          </li>
+        </ul>
+      </ng-container>
     </div>
   `,
   styles: [`
-    .search-container { position: relative; width: 300px; margin: 20px auto; }
-    input { width: 100%; padding: 8px; }
+    /* Container centers the search area and adds padding */
+    .search-container {
+      margin: 20px auto;
+      max-width: 600px;
+      padding: 0 15px;
+      box-sizing: border-box;
+    }
+
+    /* Search bar styling: flex layout for input and button */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .search-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
+    .search-button {
+      padding: 12px 16px;
+      border: none;
+      background-color: #007bff;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+    .search-button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Suggestions list styling */
     .suggestions {
       list-style: none;
       margin: 0;
       padding: 0;
-      position: absolute;
-      width: 100%;
-      background: white;
-      border: 1px solid #ccc;
-      max-height: 200px;
+      border: 1px solid #ddd;
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+      max-height: 300px;
       overflow-y: auto;
-      z-index: 1000;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     .suggestions li {
-      padding: 8px;
+      padding: 10px 16px;
       cursor: pointer;
+      transition: background 0.3s;
     }
     .suggestions li:hover {
-      background: #f0f0f0;
+      background: #f8f9fa;
+    }
+    .suggestion-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .suggestion-name {
+      font-weight: 500;
+      font-size: 16px;
+      color: #333;
+    }
+    .suggestion-type {
+      font-size: 14px;
+      color: #777;
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 768px) {
+      .search-input {
+        font-size: 14px;
+        padding: 10px 14px;
+      }
+      .search-button {
+        font-size: 14px;
+        padding: 10px 14px;
+      }
+      .suggestion-name {
+        font-size: 14px;
+      }
+      .suggestion-type {
+        font-size: 12px;
+      }
     }
   `]
 })
@@ -59,13 +140,15 @@ export class SearchComponent {
   results$: Observable<ServiceProvider[]>;
 
   constructor(private http: HttpClient, private router: Router) {
+    // Listen for value changes on the search input and perform a debounced search.
     this.results$ = this.searchControl.valueChanges.pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        switchMap(query => this.search(query || ''))
-      );
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => this.search(query || ''))
+    );
   }
 
+  // Call the API to search for providers by name or description.
   search(query: string): Observable<ServiceProvider[]> {
     if (!query) {
       return new Observable<ServiceProvider[]>(subscriber => {
@@ -73,13 +156,18 @@ export class SearchComponent {
         subscriber.complete();
       });
     }
-    // Replace with your actual search API endpoint
-    return this.http.get<ServiceProvider[]>(`http://localhost:5229/api/search?query=${encodeURIComponent(query)}`);
+    return this.http.get<ServiceProvider[]>(
+      `http://localhost:5229/api/search?query=${encodeURIComponent(query)}`
+    );
   }
 
+  // Navigate to a detailed view for the selected provider.
   selectItem(item: ServiceProvider) {
-    // Navigate to the dynamic route for the selected host/service.
-    // For example: /service/123 (where 123 is the provider id)
     this.router.navigate(['/service', item.id]);
+  }
+
+  // Optional: Trigger search manually (if needed).
+  performSearch() {
+    // This method can be used to trigger search on button click if required.
   }
 }
