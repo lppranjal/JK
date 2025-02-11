@@ -8,10 +8,12 @@ import { SearchComponent } from './app/search.component';
 import { ServiceDetailComponent } from './app/service-detail.component';
 import { LoginComponent } from './app/login.component';
 import { AuthGuard } from './app/auth.guard';
+import { SignUpComponent } from './app/signup.component';
 
 const routes = [
   { path: '', component: SearchComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'signup', component: SignUpComponent },
   { path: 'service/:id', component: ServiceDetailComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '' }
 ];
