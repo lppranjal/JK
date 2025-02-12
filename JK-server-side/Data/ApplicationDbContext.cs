@@ -14,6 +14,7 @@ namespace JK.Data
         public DbSet<Institution> Institutions { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<HostServiceView> HostServices { get; set; }  // For SQL View
+        public DbSet<ServiceProvider> ServiceProviders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

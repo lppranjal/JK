@@ -157,7 +157,7 @@ export class SearchComponent {
       });
     }
     return this.http.get<ServiceProvider[]>(
-      `http://localhost:5229/api/search?query=${encodeURIComponent(query)}`
+      `http://localhost:5000/api/search?query=${encodeURIComponent(query)}`
     );
   }
 

@@ -11,7 +11,7 @@ interface LoginResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private baseUrl = 'http://localhost:5229/api/account'; // Replace with your API endpoint
+  private baseUrl = 'http://localhost:5000/api/account'; // Replace with your API endpoint
   private _isAuthenticated = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) {}
